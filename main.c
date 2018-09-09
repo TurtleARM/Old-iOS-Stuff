@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
     } else {
         device = device_create(uuid);
         if (!device){
-            printf("We got problems holmes\nmake");
+            printf("We got problems holmes\n");
             return -69;
         }
     }
